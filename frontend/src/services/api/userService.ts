@@ -21,8 +21,18 @@ const userService = {
     const response = await api.get(`/users/user?userId=${id}`);
     return response.data;
   },
+  async fetchUsers() {
+    const response = await api.get('/users');
+
+    return response.data;
+  },
   async updateUser(data: any) {
     const response = await api.put(`/users`, data);
+    return response.data;
+  },
+  async updateUserByID(id: string, data: any) {
+    const response = await api.put(`/users/${id}`, data);
+
     return response.data;
   },
 };

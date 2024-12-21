@@ -37,9 +37,16 @@ export class SellerRequestsService {
     user: User,
     updateSellerRequestDto: Partial<SellerRequest>,
   ): Promise<SellerRequest> {
+    const sellerRequest = await this.sellerRequestModel
+      .findOne({
+        userId: user._id.toString(),
+      })
+      .lean()
+      .exec();
+
     const updatedSellerRequest =
       await this.sellerRequestModel.findByIdAndUpdate(
-        user._id.toString(), // ID автомобиля, который нужно обновить
+        sellerRequest._id, // ID автомобиля, который нужно обновить
         updateSellerRequestDto, // Данные для обновления
         { new: true }, // Опция: вернуть обновленный документ
       );
