@@ -11,6 +11,7 @@ import authService from './services/api/authService';
 import { AuthRole, UserType } from './types/user';
 import AccountPage from './pages/Acount';
 import { SellerDetails } from './pages/Seller/[id]';
+import PublishRequestsPage from './pages/PublishRequests';
 
 function App() {
   const [user, setUser] = useState<UserType | null>(null);
@@ -125,7 +126,7 @@ function App() {
               <Route path="/account" element={<AccountPage user={user} />} />
             )}
             <Route path="/users" element={<Sellers />} />
-            <Route path="/publish-requests" element={<Sellers />} />
+            <Route path="/publish-requests" element={<PublishRequestsPage />} />
             {/* Default Route */}
             <Route path="*" element={<Cars />} />
             <Route path="/login" element={<Login />} />

@@ -194,7 +194,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
         debugger;
         await carService
           .createCar(formData)
-          .then(() => alert('Объявление создано!'));
+          .then(() => alert('Заявка на создание объявления отправлена!'));
         navigate('/');
       }
     } catch (error) {

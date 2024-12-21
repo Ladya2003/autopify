@@ -36,12 +36,14 @@ export class CarsController {
     @Query('model') model?: string,
     @Query('priceFrom') priceFrom?: string,
     @Query('priceTo') priceTo?: string,
+    @Query('status') status?: string,
   ) {
     const filters = {
       brand,
       model,
       priceFrom: priceFrom ? parseFloat(priceFrom) : undefined,
       priceTo: priceTo ? parseFloat(priceTo) : undefined,
+      status,
     };
 
     const cars = await this.carsService.findFiltered(filters);
