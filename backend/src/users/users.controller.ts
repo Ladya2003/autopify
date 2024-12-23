@@ -17,10 +17,35 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './users.schema';
 import { Model } from 'mongoose';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { SellerRequestStatus } from 'src/common/const/seller-request.const';
+import { SellerRequestsService } from 'src/seller-requests/seller-requests.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UserService) {}
+  constructor(
+    private readonly usersService: UserService,
+    private readonly sellerRequestsService: SellerRequestsService,
+  ) {}
+
+  @Get()
+  @Roles(AuthRole.Admin)
+  async getAll() {
+    const users = await this.usersService.getAllUsers();
+
+    return Promise.all(
+      users.map(async (user) => {
+        const sellerRequest =
+          await this.sellerRequestsService.findRequestByUserId(
+            user._id.toString(),
+          );
+
+        return {
+          ...user,
+          hasRequest: !!sellerRequest,
+        };
+      }),
+    );
+  }
 
   @Get('sellers')
   @Roles(AuthRole.Guest)
@@ -38,12 +63,39 @@ export class UsersController {
     return user;
   }
 
+  @Put(':id')
+  @Roles(AuthRole.Admin)
+  async updateUser(@Param('id') id: string, @Body() data: any) {
+    const user = await this.usersService.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    const role = data?.role;
+    const sellerRequestStatus = data?.sellerRequestStatus;
+    if (
+      [SellerRequestStatus.Accepted, SellerRequestStatus.Rejected].includes(
+        sellerRequestStatus,
+      )
+    ) {
+      await this.sellerRequestsService.updateSellerRequest(user, {
+        status: sellerRequestStatus,
+      });
+    }
+
+    return this.usersService.update(user, {
+      ...(sellerRequestStatus === SellerRequestStatus.Accepted && {
+        role: AuthRole.Seller,
+      }),
+      ...(role && { role }),
+    });
+  }
+
   @Put()
   @Roles(AuthRole.User)
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'profilePicture', maxCount: 1 }, // Укажите имя поля и максимальное количество файлов
-    ]),
+    FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
   )
   async updateRequest(
     @UploadedFiles()

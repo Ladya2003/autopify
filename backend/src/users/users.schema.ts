@@ -27,9 +27,6 @@ export class User {
 
   @Prop({ default: '' })
   description: string;
-
-  @Prop({ default: [] })
-  carListings: string[]; // Список ID автомобилей продавца
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

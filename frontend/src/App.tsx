@@ -12,6 +12,7 @@ import { AuthRole, UserType } from './types/user';
 import AccountPage from './pages/Acount';
 import { SellerDetails } from './pages/Seller/[id]';
 import PublishRequestsPage from './pages/PublishRequests';
+import UsersPage from './pages/Users';
 
 function App() {
   const [user, setUser] = useState<UserType | null>(null);
@@ -125,7 +126,7 @@ function App() {
             {user && (
               <Route path="/account" element={<AccountPage user={user} />} />
             )}
-            <Route path="/users" element={<Sellers />} />
+            <Route path="/users" element={<UsersPage />} />
             <Route path="/publish-requests" element={<PublishRequestsPage />} />
             {/* Default Route */}
             <Route path="*" element={<Cars />} />
