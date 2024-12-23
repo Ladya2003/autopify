@@ -3,4 +3,5 @@ export enum AuthRole {
   User = 'user',
   Seller = 'seller',
   Admin = 'admin',
+  Disabled = 'disabled',
 }

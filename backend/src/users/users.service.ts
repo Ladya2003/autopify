@@ -11,6 +11,10 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async getAllUsers(): Promise<User[]> {
+    return this.userModel.find().lean().exec();
+  }
+
   async findAllSellers(): Promise<User[]> {
     return this.userModel.find({ role: AuthRole.Seller }).exec();
   }
