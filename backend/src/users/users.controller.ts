@@ -41,9 +41,7 @@ export class UsersController {
   @Put()
   @Roles(AuthRole.User)
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'profilePicture', maxCount: 1 }, // Укажите имя поля и максимальное количество файлов
-    ]),
+    FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
   )
   async updateRequest(
     @UploadedFiles()
