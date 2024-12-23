@@ -11,6 +11,7 @@ import authService from './services/api/authService';
 import { AuthRole, UserType } from './types/user';
 import AccountPage from './pages/Acount';
 import { SellerDetails } from './pages/Seller/[id]';
+import PublishRequestsPage from './pages/PublishRequests';
 import UsersPage from './pages/Users';
 
 function App() {
@@ -126,7 +127,7 @@ function App() {
               <Route path="/account" element={<AccountPage user={user} />} />
             )}
             <Route path="/users" element={<UsersPage />} />
-            <Route path="/publish-requests" element={<Sellers />} />
+            <Route path="/publish-requests" element={<PublishRequestsPage />} />
             {/* Default Route */}
             <Route path="*" element={<Cars />} />
             <Route path="/login" element={<Login />} />

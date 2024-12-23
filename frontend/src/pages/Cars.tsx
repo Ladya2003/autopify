@@ -16,10 +16,13 @@ const Cars = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UserType | null>(null);
 
-  const handleFilter = async (filters: Record<string, any>) => {
+  const handleFilter = async (filters?: Record<string, any>) => {
     try {
       setLoading(true);
-      const data = await carService.fetchCars(filters);
+      const data = await carService.fetchCars({
+        ...filters,
+        status: 'accepted',
+      });
       setCars(data);
     } catch (error) {
       console.error('Failed to fetch cars:', error);
@@ -35,7 +38,7 @@ const Cars = () => {
   };
 
   useEffect(() => {
-    handleFilter({});
+    handleFilter();
     fetchRole();
   }, []);
 

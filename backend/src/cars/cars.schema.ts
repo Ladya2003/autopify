@@ -1,6 +1,7 @@
 import { Field, ID } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { CarRequestStatus } from 'src/common/const/car.const';
 
 export type CarDocument = Car & Document;
 
@@ -50,6 +51,9 @@ export class Car {
 
   @Prop({ required: true })
   testDriveAvailability: string[]; // Доступное время для тест-драйва
+
+  @Prop({ required: true, default: CarRequestStatus.Pending })
+  status: CarRequestStatus;
 }
 
 export const CarSchema = SchemaFactory.createForClass(Car);

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Car, CarDocument } from './cars.schema';
+import { CarRequestStatus } from 'src/common/const/car.const';
 
 @Injectable()
 export class CarsService {
@@ -55,8 +56,14 @@ export class CarsService {
     model?: string;
     priceFrom?: number;
     priceTo?: number;
+    status?: string;
   }): Promise<Car[]> {
     const query: any = {};
+
+    // Фильтрация по бренду
+    if (filters.status) {
+      query.status = filters.status;
+    }
 
     // Фильтрация по бренду
     if (filters.brand) {
