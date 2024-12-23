@@ -59,6 +59,7 @@ export class CarsController {
     const seller = await this.userService.findById(car.sellerId);
     if (!seller) throw new NotFoundException('Владелец не найден');
 
+    // TODO: когда добавляется заявка на тест-драйв он не убирается из списка предложенных на странице авто. он должен убираться (вроде пофиксилось)
     const testDriveUnavailabilityModels =
       await this.testDrivesService.findAllUnavailable(car._id.toString());
 
@@ -66,7 +67,7 @@ export class CarsController {
       (model) => model.testDriveDatetime,
     );
 
-    // фетчить только те даты что больше чем dayjs()
+    // TODO: даты которые меньше текущего дня делать disabled
     const testDriveAvailability = car.testDriveAvailability.filter(
       (date) => !testDriveUnavailability.includes(date),
     );

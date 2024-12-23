@@ -50,7 +50,6 @@ const Cars = () => {
     }
   };
 
-  // TODO: delete
   const handleEditCar = (carId: string) => {
     if (user?.role === AuthRole.Admin || user?.role === AuthRole.Seller) {
       navigate(`/cars/edit/${carId}`);

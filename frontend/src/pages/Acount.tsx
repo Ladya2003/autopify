@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, CardMedia, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  CardMedia,
+  Grid,
+  TextField,
+  Typography,
+} from '@mui/material';
 import axios from 'axios';
 import { AuthRole, UserType } from '../types/user';
 import sellerService from '../services/api/sellerService';
 import Header from '../components/layout/Header';
 import userService from '../services/api/userService';
+import testDriveService from '../services/api/testDriveService';
+import { TestDrive, TestDriveStatus } from '../types/test-drive';
+import theme from '../config/theme';
 
 const AccountPage = ({ user }: { user: UserType }) => {
   const [name, setName] = useState(user.nickname || '');
@@ -12,6 +22,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
   const [avatarUrl, setAvatarUrl] = useState(user.profilePicture || '');
   const [avatarFile, setAvatarFile] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [testDrives, setTestDrives] = useState<TestDrive[]>([]);
 
   const handleSubmitRequest = async () => {
     try {
@@ -20,7 +31,8 @@ const AccountPage = ({ user }: { user: UserType }) => {
         .createRequest()
         .then(() => alert('Заявка отправлена успешно!'));
     } catch (error: any) {
-      alert(error.response.data.message || 'Error submitting request');
+      // alert(error.response.data.message || 'Error submitting request');
+      alert('Ваша заявка обрабатывается!');
     } finally {
       setIsSubmitting(false);
     }
@@ -34,7 +46,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
           description,
           profilePicture: [avatarFile],
         })
-        .then(() => alert('Profile updated successfully!'));
+        .then(() => alert('Профиль обновлен успешно!'));
     } catch (error: any) {
       alert(error.response.data.message || 'Error updating profile');
     }
@@ -54,6 +66,9 @@ const AccountPage = ({ user }: { user: UserType }) => {
 
   useEffect(() => {
     setAvatarUrl(user.profilePicture);
+    if (user?.id) {
+      testDriveService.fetchTestDrivesByUserId(user.id).then(setTestDrives);
+    }
   }, [user]);
 
   // console.log(
@@ -119,7 +134,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
           <Typography variant="h6" gutterBottom>
             Редактировать изображение профиля
           </Typography>
-          {/* TODO: fix avatar saving */}
+          {/* TODO: сохранение аватара через файл не работает. можно временно сделать сохранение через ссылку в нете и забить */}
           <CardMedia
             style={{
               width: '200px',
@@ -141,7 +156,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
             alt={`${avatarUrl}`}
           />
           {/* Кнопка загрузки */}
-          <Button variant="contained" component="label">
+          {/* <Button variant="contained" component="label">
             Загрузить изображения
             <input
               type="file"
@@ -149,7 +164,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
               hidden
               onChange={(event) => handleFileChange(event, setAvatarFile)}
             />
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             color="secondary"
@@ -159,7 +174,57 @@ const AccountPage = ({ user }: { user: UserType }) => {
           </Button>
         </Box>
       </Box>
-      {/* TODO: добавить инфу о поданных заявках на тест-драйв */}
+
+      <Typography variant="h6" pt={4}>
+        Ваши заявки на тест-драйвы
+      </Typography>
+      {testDrives.length === 0 ? (
+        <Typography color={theme.palette.customColors.secondaryText}>
+          Заявок пока нету
+        </Typography>
+      ) : (
+        testDrives?.map((test, index) => (
+          <Grid container wrap="wrap" rowSpacing={2} py={2}>
+            <Grid item xs={2}>
+              {test.car?.brand}
+            </Grid>
+            <Grid item xs={2}>
+              {test.car?.model}
+            </Grid>
+            <Grid item xs={2}>
+              {test.car?.year}
+            </Grid>
+            <Grid item xs={2}>
+              {test.car?.price}
+            </Grid>
+            <Grid item xs={2}>
+              {test.testDriveDatetime}
+            </Grid>
+            <Grid
+              item
+              container
+              xs={2}
+              direction="row"
+              gap={2}
+              alignItems="center"
+            >
+              {test.status === TestDriveStatus.Accepted ? (
+                <Grid item color="green">
+                  Одобрено
+                </Grid>
+              ) : test.status === TestDriveStatus.Rejected ? (
+                <Grid item color="red">
+                  Отказано
+                </Grid>
+              ) : (
+                <Grid item color={theme.palette.customColors.secondaryText}>
+                  На рассмотрении
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+        ))
+      )}
     </Header>
   );
 };

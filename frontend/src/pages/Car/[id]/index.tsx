@@ -27,21 +27,21 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import CarSlider from '../../../components/slider/CarSlider';
 import theme from '../../../config/theme';
-import { DEFAULT_AVATAR, UserType } from '../../../types/user';
-import { TestDriveStatus } from '../../../types/test-drive';
+import { AuthRole, DEFAULT_AVATAR, UserType } from '../../../types/user';
+import { TestDrive, TestDriveStatus } from '../../../types/test-drive';
 import dayjs from 'dayjs';
 import authService from '../../../services/api/authService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CommentType } from '../../../types/comment';
 
-// TODO: на этой странице нужно еще доделать комментарии, и не забыть реализовать одобрение отклонение тест драйвов на странице продавца
 const CarDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [car, setCar] = useState<Car | null>(null);
   const [testDriveModalOpen, setTestDriveModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [testDriveComment, setTestDriveComment] = useState('');
+  const [testDrives, setTestDrives] = useState<TestDrive[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,8 +57,11 @@ const CarDetailsPage: React.FC = () => {
     if (id) {
       carService.fetchCar(id).then(setCar);
       commentService.fetchComments(id).then(setComments);
+      if (user && user?.id === car?.seller.id) {
+        testDriveService.fetchTestDrives(id).then(setTestDrives);
+      }
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * commentsPerPage;
@@ -143,10 +146,32 @@ const CarDetailsPage: React.FC = () => {
     );
   }
 
+  const updateData = async (index: number, data: any) => {
+    try {
+      const testDrive = testDrives[index];
+      await testDriveService
+        .updateTestDrive(testDrive._id, data)
+        .then(() => window.location.reload());
+    } catch (error) {
+      alert(`Ошибка при обновлении тест-драйва: ${error}`);
+    }
+  };
+
+  const handleRejectClick = async (index: number) =>
+    updateData(index, {
+      status: TestDriveStatus.Rejected,
+    });
+
+  const handleAcceptClick = async (index: number) =>
+    updateData(index, {
+      status: TestDriveStatus.Accepted,
+    });
+
   console.log('displayedComments', displayedComments);
+  console.log('testDrives', testDrives);
   return (
     <>
-      {/* TODO: добавить назад в хедер */}
+      {/* TODO: добавить назад в хедер (можно забить) */}
       <Header
         action={{}}
         title={`${car?.brand} ${car?.model} (${car?.year}г)`}
@@ -155,13 +180,16 @@ const CarDetailsPage: React.FC = () => {
         <Box sx={{ padding: 4, position: 'relative' }}>
           {car && (
             <>
-              {user?.id === car?.seller?.id && (
+              {(user?.id === car?.seller?.id ||
+                user?.role === AuthRole.Admin) && (
                 <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-                  <IconButton
-                    onClick={() => navigator(`/cars/edit/${car._id}`)}
-                  >
-                    <EditIcon />
-                  </IconButton>
+                  {user?.id === car?.seller?.id && (
+                    <IconButton
+                      onClick={() => navigator(`/cars/edit/${car._id}`)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
                   <IconButton
                     onClick={() => setIsDeleteModalOpen(true)}
                     color="error"
@@ -229,11 +257,7 @@ const CarDetailsPage: React.FC = () => {
                     <Typography>
                       Имя: {car?.seller?.nickname || 'Аноним'}
                     </Typography>
-                    <Button
-                      variant="outlined"
-                      // TODO: make this component
-                      href={`/sellers/${car.sellerId}`}
-                    >
+                    <Button variant="outlined" href={`/seller/${car.sellerId}`}>
                       Перейти к профилю
                     </Button>
                   </Box>
@@ -267,7 +291,71 @@ const CarDetailsPage: React.FC = () => {
                 </Box>
               )}
 
-              {/* TODO: добавить инфу о заявках на тест-драйв */}
+              {user?.id === car.seller.id && (
+                <>
+                  <Typography variant="h6" pt={4}>
+                    Заявки клиентов на тест-драйв
+                  </Typography>
+                  {testDrives.length === 0 ? (
+                    <Typography
+                      color={theme.palette.customColors.secondaryText}
+                    >
+                      Заявок пока нету
+                    </Typography>
+                  ) : (
+                    testDrives?.map((test, index) => (
+                      <Grid container wrap="wrap" rowSpacing={2} py={2}>
+                        <Grid item xs={2}>
+                          {test.author?.email}
+                        </Grid>
+                        <Grid item xs={2}>
+                          {test.testDriveDatetime}
+                        </Grid>
+                        <Grid item xs={2}>
+                          {test.description}
+                        </Grid>
+                        <Grid
+                          item
+                          container
+                          xs={2}
+                          direction="row"
+                          gap={2}
+                          alignItems="center"
+                        >
+                          {test.status === TestDriveStatus.Accepted ? (
+                            <Grid item color="green">
+                              Одобрено
+                            </Grid>
+                          ) : test.status === TestDriveStatus.Rejected ? (
+                            <Grid item color="red">
+                              Отказано
+                            </Grid>
+                          ) : (
+                            <>
+                              <Grid item>
+                                <Button
+                                  color="success"
+                                  onClick={() => handleAcceptClick(index)}
+                                >
+                                  Одобрить заявку
+                                </Button>
+                              </Grid>
+                              <Grid item>
+                                <Button
+                                  color="secondary"
+                                  onClick={() => handleRejectClick(index)}
+                                >
+                                  Отклонить заявку
+                                </Button>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
+                      </Grid>
+                    ))
+                  )}
+                </>
+              )}
 
               {/* Comments */}
               <Box mt={4}>
@@ -305,7 +393,7 @@ const CarDetailsPage: React.FC = () => {
                 </Box>
 
                 <List>
-                  {/* TODO: добавить дату коммента */}
+                  {/* TODO: добавить дату коммента (можно забить) */}
                   {displayedComments &&
                     displayedComments.map((comment, idx) => (
                       <ListItem key={idx}>

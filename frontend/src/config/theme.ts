@@ -9,6 +9,7 @@ declare module '@mui/material/styles/createPalette' {
       purple: string;
       white: string;
       black: string;
+      secondaryText?: string;
     };
   }
   interface PaletteOptions {
@@ -18,6 +19,7 @@ declare module '@mui/material/styles/createPalette' {
       purple?: string;
       white: string;
       black: string;
+      secondaryText?: string;
     };
   }
 }
@@ -41,6 +43,7 @@ const theme = createTheme({
       purple: '#9c27b0',
       white: '#FFF',
       black: '#000',
+      secondaryText: 'rgba(0, 0, 0, 0.6)',
     },
   },
 });

@@ -27,4 +27,29 @@ export class TestDrivesService {
 
     return requestedAtDates;
   }
+
+  async findByCarId(carId: string): Promise<any> {
+    return this.testDriveModel.find({ carId }).lean().exec(); // Найти документ по ID
+  }
+
+  async findByUserId(userId: string): Promise<any> {
+    return this.testDriveModel.find({ authorId: userId }).lean().exec(); // Найти документ по ID
+  }
+
+  async updateTestDrive(
+    testDriveId: string,
+    updateTestDriveDto: any,
+  ): Promise<TestDrive> {
+    const updatedTestDrive = await this.testDriveModel.findByIdAndUpdate(
+      testDriveId, // ID автомобиля, который нужно обновить
+      updateTestDriveDto, // Данные для обновления
+      { new: true }, // Опция: вернуть обновленный документ
+    );
+
+    if (!updatedTestDrive) {
+      throw new Error(`Car with ID ${testDriveId} not found`);
+    }
+
+    return updatedTestDrive;
+  }
 }

@@ -13,3 +13,5 @@ export class SellerRequest {
 }
 
 export const SellerRequestSchema = SchemaFactory.createForClass(SellerRequest);
+
+SellerRequestSchema.index({ userId: 1, status: 1 }, { unique: true });

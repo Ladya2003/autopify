@@ -40,6 +40,7 @@ export const SellerDetails = () => {
     setDisplayedComments(comments.slice(startIndex, endIndex));
   }, [currentPage, comments]);
 
+  // Сделать показ алерта если 403 таким же как и на странице деталей авто
   const handleAddComment = async () => {
     if (!newComment) return;
 

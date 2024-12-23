@@ -35,7 +35,7 @@ export class UsersController {
     return Promise.all(
       users.map(async (user) => {
         const sellerRequest =
-          await this.sellerRequestsService.findRequestByUserId(
+          await this.sellerRequestsService.findPendingRequestByUserId(
             user._id.toString(),
           );
 

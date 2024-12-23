@@ -95,7 +95,9 @@ interface CreateOrEditCarProps {
   user: UserType | null;
 }
 
-// TODO: добавить два поля: место и время тест-драйва
+// TODO-на будущее-будущее: добавить два поля: место и время тест-драйва (можно забить)
+// TODO: не работает изменение авто
+// Проверить что вся валидация рабоатет
 const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
   carId: paramCarId,
   user,
@@ -191,7 +193,6 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
           .then(() => alert('Объявление обновлено!'));
         navigate('/');
       } else {
-        debugger;
         await carService
           .createCar(formData)
           .then(() => alert('Заявка на создание объявления отправлена!'));
@@ -373,7 +374,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
               />
             )}
           />
-          {/* TODO: сделать еще инпут для загрузки фото через инет и сделать так чтобы можно было Редактировать определенные фото а не все сразу, */}
+          {/* TODO-на будущее-будущее: сделать еще инпут для загрузки фото через инет и сделать так чтобы можно было Редактировать определенные фото а не все сразу, */}
           <Controller
             name="images"
             control={control}
@@ -448,7 +449,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
             )}
           />
           {/* TODO: make this abligatary */}
-          {/* TODO: посмотреть чтобы корректно работало при изменении самой публикации. изменять статусы на canceld для тех что создатель убрал */}
+          {/* TODO: посмотреть чтобы корректно работало при изменении самой публикации. изменять статусы на canceld для тех что создатель убрал при редактировании */}
           <Controller
             name="testDriveAvailability"
             control={control}
@@ -519,7 +520,6 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
               );
             }}
           />
-          {/* TODO: подать заявку на создание, а не создавать сразу */}
           <Button type="submit" variant="contained">
             {carId ? 'Сохранить изменения' : 'Создать'}
           </Button>

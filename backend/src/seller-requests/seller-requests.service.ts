@@ -17,6 +17,15 @@ export class SellerRequestsService {
     return request;
   }
 
+  async findPendingRequestByUserId(userId: string): Promise<SellerRequest> {
+    const request = await this.sellerRequestModel.findOne({
+      userId,
+      status: SellerRequestStatus.Pending,
+    });
+    return request;
+  }
+
+  // TODO: почему-то если отвергнули заявку стать селлером, потом опять закидываешь, то ошибка уникалного индекса
   async createRequest(user: User): Promise<SellerRequest> {
     const existingRequest = await this.sellerRequestModel.findOne({
       where: { user, status: SellerRequestStatus.Pending },

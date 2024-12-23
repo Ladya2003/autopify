@@ -36,5 +36,6 @@ import { TestDrivesModule } from 'src/test-drives/test-drives.module';
   ],
   controllers: [CarsController],
   providers: [CarsService, JwtService],
+  exports: [CarsService],
 })
 export class CarsModule {}

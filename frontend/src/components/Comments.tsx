@@ -56,7 +56,6 @@ const Comments = ({ carId }: { carId: string }) => {
         <List>
           {comments.map((comment, index) => (
             <ListItem key={index}>
-              {/* TODO: fix that */}
               {/* <ListItemText primary={comment.text} /> */}
             </ListItem>
           ))}

@@ -69,18 +69,22 @@ function App() {
                 Продавцы
               </Link>
             </li>
-            <li style={{ marginBottom: '20px' }}>
-              <Link
-                to="/account"
-                style={{
-                  color: '#ecf0f1',
-                  textDecoration: 'none',
-                  fontSize: '18px',
-                }}
-              >
-                Аккаунт
-              </Link>
-            </li>
+            {!user?.role ||
+              (user?.role !== AuthRole.Disabled &&
+                user?.role !== AuthRole.Guest && (
+                  <li style={{ marginBottom: '20px' }}>
+                    <Link
+                      to="/account"
+                      style={{
+                        color: '#ecf0f1',
+                        textDecoration: 'none',
+                        fontSize: '18px',
+                      }}
+                    >
+                      Аккаунт
+                    </Link>
+                  </li>
+                ))}
             {user?.role === AuthRole.Admin && (
               <>
                 <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>
@@ -122,13 +126,11 @@ function App() {
             <Route path="/view-car/:id" element={<CarPage />} />
             <Route path="/sellers" element={<Sellers />} />
             <Route path="/seller/:id" element={<SellerDetails />} />
-            {/* TODO: change that */}
             {user && (
               <Route path="/account" element={<AccountPage user={user} />} />
             )}
             <Route path="/users" element={<UsersPage />} />
             <Route path="/publish-requests" element={<PublishRequestsPage />} />
-            {/* Default Route */}
             <Route path="*" element={<Cars />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -145,6 +147,3 @@ function App() {
 }
 
 export default App;
-
-// TODO: сделать страницу для админа где он сможет блокировать/подтвержать заявки на продавца
-// TODO: сделать страницу для админа где он сможет одобрять/запрещать публикацию авто

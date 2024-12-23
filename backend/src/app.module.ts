@@ -24,7 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
     TestDrivesModule,
     CommentsModule,
     SellerRequestsModule,
-    // TODO: change that to env
+    // TODO: change that to env (можно забить)
     MongooseModule.forRoot(
       'mongodb+srv://vladvakulenchikk:123123123@cluster0.mu3ekbo.mongodb.net/cars?retryWrites=true&w=majority',
     ),
