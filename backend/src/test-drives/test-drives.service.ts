@@ -20,7 +20,13 @@ export class TestDrivesService {
     const requestedAtDates = await this.testDriveModel
       .find({
         carId,
-        status: { $in: [TestDriveStatus.Accepted, TestDriveStatus.Pending] },
+        status: {
+          $in: [
+            TestDriveStatus.Accepted,
+            TestDriveStatus.Pending,
+            TestDriveStatus.Canceled,
+          ],
+        },
       })
       .lean()
       .exec();
@@ -49,6 +55,19 @@ export class TestDrivesService {
     if (!updatedTestDrive) {
       throw new Error(`Car with ID ${testDriveId} not found`);
     }
+
+    return updatedTestDrive;
+  }
+
+  async updateTestDriveByDateTime(
+    testDriveDatetime: string,
+    updateTestDriveDto: any,
+  ): Promise<TestDrive> {
+    const updatedTestDrive = await this.testDriveModel.findOneAndUpdate(
+      { testDriveDatetime }, // ID автомобиля, который нужно обновить
+      updateTestDriveDto, // Данные для обновления
+      { new: true }, // Опция: вернуть обновленный документ
+    );
 
     return updatedTestDrive;
   }

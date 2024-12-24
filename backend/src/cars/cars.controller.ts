@@ -20,6 +20,7 @@ import { AuthRole } from 'src/common/const/auth.const';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserService } from 'src/users/users.service';
 import { TestDrivesService } from 'src/test-drives/test-drives.service';
+import { TestDriveStatus } from 'src/common/const/test-drives';
 
 @Controller('cars')
 export class CarsController {
@@ -59,7 +60,6 @@ export class CarsController {
     const seller = await this.userService.findById(car.sellerId);
     if (!seller) throw new NotFoundException('Владелец не найден');
 
-    // TODO: когда добавляется заявка на тест-драйв он не убирается из списка предложенных на странице авто. он должен убираться (вроде пофиксилось)
     const testDriveUnavailabilityModels =
       await this.testDrivesService.findAllUnavailable(car._id.toString());
 
@@ -67,7 +67,6 @@ export class CarsController {
       (model) => model.testDriveDatetime,
     );
 
-    // TODO: даты которые меньше текущего дня делать disabled
     const testDriveAvailability = car.testDriveAvailability.filter(
       (date) => !testDriveUnavailability.includes(date),
     );
@@ -115,6 +114,7 @@ export class CarsController {
     return this.carsService.create({
       ...createCarDto,
       sellerId: user.id,
+      // testDriveAvailability: createCarDto?.testDriveAvailability?.sort(),
       images: files.images?.map((file) => file.path), // Сохраняем пути к файлам
     });
   }
@@ -135,6 +135,34 @@ export class CarsController {
     const dataToUpdate = files.images
       ? { ...updateData, images: files.images?.map((file) => file.path) }
       : updateData;
+
+    // updateData = {
+    //   ...updateData,
+    //   testDriveAvailability: updateData?.testDriveAvailability?.sort(),
+    // };
+
+    // const car = await this.carsService.findOne(carId);
+    // if (!car) throw new NotFoundException('Машина не найдена');
+
+    // const carTestDrives = car.testDriveAvailability || [];
+    // const newTestDrives = dataToUpdate.testDriveAvailability || [];
+
+    // const deletedTestDrives = carTestDrives.filter(
+    //   (existingTD) => !newTestDrives.includes(existingTD),
+    // );
+
+    // if (
+    //   deletedTestDrives?.length > 0 &&
+    //   carTestDrives.length > newTestDrives.length
+    // ) {
+    //   await Promise.all(
+    //     deletedTestDrives.map((td) => {
+    //       this.testDrivesService.updateTestDriveByDateTime(td, {
+    //         status: TestDriveStatus.Canceled,
+    //       });
+    //     }),
+    //   );
+    // }
 
     return this.carsService.updateCar(carId, dataToUpdate);
   }
