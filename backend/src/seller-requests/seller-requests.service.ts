@@ -25,7 +25,7 @@ export class SellerRequestsService {
     return request;
   }
 
-  // TODO: почему-то если отвергнули заявку стать селлером, потом опять закидываешь, то ошибка уникалного индекса
+  // FIXED: почему-то если отвергнули заявку стать селлером, потом опять закидываешь, то ошибка уникалного индекса (db has a userId_1 index and it affects a new entity)
   async createRequest(user: User): Promise<SellerRequest> {
     const existingRequest = await this.sellerRequestModel.findOne({
       where: { user, status: SellerRequestStatus.Pending },
