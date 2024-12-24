@@ -11,6 +11,7 @@ export const calculateAge = (birthYear: number): number => {
   return new Date().getFullYear() - birthYear;
 };
 
+// TODO: low priority - change function name
 export const parseAvatarURL = (inAvatarURL?: string) => {
   if (inAvatarURL) {
     return inAvatarURL.includes('http')
