@@ -96,7 +96,7 @@ interface CreateOrEditCarProps {
 }
 
 // TODO-на будущее-будущее: добавить два поля: место и время тест-драйва (можно забить)
-// TODO: не работает изменение авто
+// FIXED: не работает изменение авто
 // Проверить что вся валидация рабоатет
 const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
   carId: paramCarId,
