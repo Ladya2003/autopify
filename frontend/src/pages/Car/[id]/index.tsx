@@ -34,6 +34,7 @@ import authService from '../../../services/api/authService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CommentType } from '../../../types/comment';
+import { parseAvatarURL } from '../../../services/utils/utils';
 
 const CarDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -167,6 +168,8 @@ const CarDetailsPage: React.FC = () => {
       status: TestDriveStatus.Accepted,
     });
 
+  const parsedAvatarURL = parseAvatarURL(car.seller?.profilePicture);
+
   console.log('displayedComments', displayedComments);
   console.log('testDrives', testDrives);
   return (
@@ -249,7 +252,7 @@ const CarDetailsPage: React.FC = () => {
               <Box mt={4}>
                 <Typography variant="h6">Продавец</Typography>
                 <Box display="flex" alignItems="center" gap={2}>
-                  <Avatar src={car.seller?.profilePicture || DEFAULT_AVATAR} />
+                  <Avatar src={parsedAvatarURL} />
                   <Box>
                     <Typography>
                       Почта: {car?.seller?.email || 'test@gmail.com'}
@@ -405,17 +408,9 @@ const CarDetailsPage: React.FC = () => {
                           /> */}
                           <CardMedia
                             component="img"
-                            image={
-                              comment.author?.profilePicture
-                                ? comment.author?.profilePicture?.startsWith(
-                                    'http',
-                                  )
-                                  ? comment.author?.profilePicture
-                                  : `http://localhost:3000/assets/images/${comment.author?.profilePicture
-                                      ?.split('\\')
-                                      .pop()}`
-                                : DEFAULT_AVATAR
-                            }
+                            image={parseAvatarURL(
+                              comment.author?.profilePicture,
+                            )}
                             alt={`${car.brand} ${car.model}`}
                             sx={{
                               marginBottom: 2,

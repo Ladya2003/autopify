@@ -121,11 +121,22 @@ export class CarsController {
 
   @Put(':carId')
   @Roles(AuthRole.Seller)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'images', maxCount: 10 }, // Укажите имя поля и максимальное количество файлов
+    ]),
+  )
   async updateCar(
     @Param('carId') carId: string,
     @Body() updateData: any,
+    @UploadedFiles()
+    files: { images?: Express.Multer.File[] },
   ): Promise<any> {
-    return this.carsService.updateCar(carId, updateData);
+    const dataToUpdate = files.images
+      ? { ...updateData, images: files.images?.map((file) => file.path) }
+      : updateData;
+
+    return this.carsService.updateCar(carId, dataToUpdate);
   }
 
   @Delete(':id')

@@ -107,7 +107,7 @@ export class UsersController {
 
     return this.usersService.update(user, {
       ...updateData,
-      profilePicture: file?.profilePicture?.path,
+      profilePicture: file?.profilePicture?.[0]?.path,
     });
   }
 }

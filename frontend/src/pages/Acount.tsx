@@ -15,12 +15,13 @@ import userService from '../services/api/userService';
 import testDriveService from '../services/api/testDriveService';
 import { TestDrive, TestDriveStatus } from '../types/test-drive';
 import theme from '../config/theme';
+import { parseAvatarURL } from '../services/utils/utils';
 
 const AccountPage = ({ user }: { user: UserType }) => {
   const [name, setName] = useState(user.nickname || '');
   const [description, setDescription] = useState(user.description || '');
   const [avatarUrl, setAvatarUrl] = useState(user.profilePicture || '');
-  const [avatarFile, setAvatarFile] = useState();
+  const [avatarFile, setAvatarFile] = useState<File | Blob>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testDrives, setTestDrives] = useState<TestDrive[]>([]);
 
@@ -40,12 +41,16 @@ const AccountPage = ({ user }: { user: UserType }) => {
 
   const handleProfileUpdate = async () => {
     try {
+      const formData = new FormData();
+      formData.append('nickname', name);
+      formData.append('description', description);
+
+      if (avatarFile) {
+        formData.append('profilePicture', avatarFile);
+      }
+
       await userService
-        .updateUser({
-          nickname: name,
-          description,
-          profilePicture: [avatarFile],
-        })
+        .updateUser(formData)
         .then(() => alert('Профиль обновлен успешно!'));
     } catch (error: any) {
       alert(error.response.data.message || 'Error updating profile');
@@ -71,14 +76,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
     }
   }, [user]);
 
-  // console.log(
-  //   'avatarUrl',
-  //   `http://localhost:3000/assets/images/${avatarUrl?.split('\\').pop()}`,
-  // );
-
-  console.log('avatarUrl', avatarUrl);
-
-  // console.log('avatarFile', avatarFile);
+  const parsedAvatarURL = parseAvatarURL(avatarUrl);
 
   return (
     <Header action={{}} title={`Настройка аккаунта`} shouldDisplayLogin>
@@ -124,39 +122,27 @@ const AccountPage = ({ user }: { user: UserType }) => {
             onChange={(e) => setDescription(e.target.value)}
             sx={{ mb: 2 }}
           />
-          <TextField
-            fullWidth
-            label="Ссылка на аватар"
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            sx={{ mb: 3 }}
-          />
           <Typography variant="h6" gutterBottom>
             Редактировать изображение профиля
           </Typography>
-          {/* TODO: сохранение аватара через файл не работает. можно временно сделать сохранение через ссылку в нете и забить */}
-          <CardMedia
-            style={{
-              width: '200px',
-              // maxHeight: '200px',
-              marginRight: '0.5rem',
-              aspectRatio: 1,
-              borderRadius: '100%',
-            }}
-            component="img"
-            // height="140"
-            image={
-              avatarUrl
-              // avatarUrl.startsWith('http')
-              //   ? avatarUrl
-              //   : `http://localhost:3000/assets/images/${avatarUrl
-              //       ?.split('\\')
-              //       .pop()}`
-            }
-            alt={`${avatarUrl}`}
-          />
+          {/* FIXED: сохранение аватара через файл не работает. можно временно сделать сохранение через ссылку в нете и забить */}
+          <Box sx={{ mb: 1 }}>
+            <CardMedia
+              style={{
+                width: '200px',
+                // maxHeight: '200px',
+                marginRight: '0.5rem',
+                aspectRatio: 1,
+                borderRadius: '100%',
+              }}
+              component="img"
+              // height="140"
+              image={parsedAvatarURL}
+              alt={parsedAvatarURL}
+            />
+          </Box>
           {/* Кнопка загрузки */}
-          {/* <Button variant="contained" component="label">
+          <Button variant="contained" component="label" sx={{ mr: 1 }}>
             Загрузить изображения
             <input
               type="file"
@@ -164,7 +150,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
               hidden
               onChange={(event) => handleFileChange(event, setAvatarFile)}
             />
-          </Button> */}
+          </Button>
           <Button
             variant="contained"
             color="secondary"

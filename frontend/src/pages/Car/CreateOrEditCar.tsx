@@ -21,6 +21,7 @@ import carService from '../../services/api/carService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserType } from '../../types/user';
 import Header from '../../components/layout/Header';
+import { parseAvatarURL } from '../../services/utils/utils';
 
 const TransmissionType = {
   Automatic: 'Автомат',
@@ -96,7 +97,7 @@ interface CreateOrEditCarProps {
 }
 
 // TODO-на будущее-будущее: добавить два поля: место и время тест-драйва (можно забить)
-// TODO: не работает изменение авто
+// FIXED: не работает изменение авто
 // Проверить что вся валидация рабоатет
 const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
   carId: paramCarId,
@@ -402,13 +403,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
                           }}
                           component="img"
                           height="140"
-                          image={
-                            preview?.startsWith('http')
-                              ? preview
-                              : `http://localhost:3000/assets/images/${preview
-                                  ?.split('\\')
-                                  .pop()}`
-                          }
+                          image={parseAvatarURL(preview)}
                           alt={`${preview}`}
                         />
                       ) : (
