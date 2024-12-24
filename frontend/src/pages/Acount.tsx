@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -15,10 +15,7 @@ import userService from '../services/api/userService';
 import testDriveService from '../services/api/testDriveService';
 import { TestDrive, TestDriveStatus } from '../types/test-drive';
 import theme from '../config/theme';
-
-// TODO: move to the env file
-const DEFAULT_IMAGE_URL =
-  'https://i2.wp.com/vdostavka.ru/wp-content/uploads/2019/05/no-avatar.png?fit=512%2C512&ssl=1';
+import { parseAvatarURL } from '../services/utils/utils';
 
 const AccountPage = ({ user }: { user: UserType }) => {
   const [name, setName] = useState(user.nickname || '');
@@ -79,17 +76,7 @@ const AccountPage = ({ user }: { user: UserType }) => {
     }
   }, [user]);
 
-  const parsedAvatarURL = useMemo(() => {
-    if (avatarUrl) {
-      return avatarUrl.includes('http')
-        ? avatarUrl
-        : `http://localhost:3000/assets/images/profile/${avatarUrl
-            ?.split('\\')
-            .pop()}`;
-    }
-
-    return DEFAULT_IMAGE_URL;
-  }, [avatarUrl]);
+  const parsedAvatarURL = parseAvatarURL(avatarUrl);
 
   return (
     <Header action={{}} title={`Настройка аккаунта`} shouldDisplayLogin>
