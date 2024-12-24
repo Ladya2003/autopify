@@ -9,9 +9,12 @@ const authService = {
         password,
       });
 
-      if (response.data.message) {
+      if (response.data.message === 'Invalid credentials') {
         alert('Неверные почта или пароль');
+      } else if (response.data.message === 'Banned by admin') {
+        alert('К сожалению, вас заблокировала администрация');
       } else {
+        debugger;
         const { access_token, refresh_token } = response.data;
 
         // Сохраняем токены

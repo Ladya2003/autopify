@@ -24,8 +24,6 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.split(' ')[1];
 
-    // TODO: если role disabled сразу false кидать
-
     if (role === AuthRole.Guest || !role) return true;
 
     if (!token) return false;
@@ -39,7 +37,11 @@ export class JwtAuthGuard implements CanActivate {
 
       request.user = user;
 
-      if (role === AuthRole.User && user.role === AuthRole.Guest) return false;
+      if (
+        (role === AuthRole.User && user.role === AuthRole.Guest) ||
+        user.role === AuthRole.Disabled
+      )
+        return false;
       if (
         role === AuthRole.Seller &&
         (user.role === AuthRole.Guest || user.role === AuthRole.User)

@@ -132,7 +132,7 @@ function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/publish-requests" element={<PublishRequestsPage />} />
             <Route path="*" element={<Cars />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login user={user} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cars/new" element={<CreateOrEditCar user={user} />} />
             <Route

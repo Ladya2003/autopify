@@ -18,8 +18,15 @@ const carService = {
     }
   },
   async fetchCar(carId: string) {
-    const response = await api.get(`/cars/cars?carId=${carId}`);
-    return response.data;
+    try {
+      const response = await api.get(`/cars/cars?carId=${carId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        'Ошибка получения списка машин:',
+        error.response?.data?.message,
+      );
+    }
   },
   async fetchModels(selectedBrand: string) {
     const response = await api.get(`/cars/brands?brand=${selectedBrand}`);

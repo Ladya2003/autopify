@@ -32,9 +32,15 @@ export class AuthController {
   @Roles(AuthRole.Guest)
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
-    const user = await this.userService.validateUser(body.email, body.password);
+    const user = (await this.userService.validateUser(
+      body.email,
+      body.password,
+    )) as any;
     if (!user) {
       return { message: 'Invalid credentials' };
+    }
+    if (user._doc.role === AuthRole.Disabled) {
+      return { message: 'Banned by admin' };
     }
     return this.authService.login(user); // Возвращаем JWT токен
   }

@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { LoginFormData, loginSchema } from './validationSchemas';
 import authService from '../../services/api/authService';
+import { AuthRole, UserType } from '../../types/user';
 
 type Props = {
+  user: UserType | null;
   handleLogin?: () => void;
 };
 
-const Login = ({ handleLogin }: Props) => {
+const Login = ({ user, handleLogin }: Props) => {
   const navigate = useNavigate();
 
   const {
@@ -24,11 +26,15 @@ const Login = ({ handleLogin }: Props) => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await authService.login(
-        data.email,
-        data.password,
-        handleLogin,
-      );
+      if (user?.role === AuthRole.Disabled) {
+        alert('Вас заблокировала администрация');
+      } else {
+        const response = await authService.login(
+          data.email,
+          data.password,
+          handleLogin,
+        );
+      }
       // localStorage.setItem('access_token', response.access_token);
       // navigate('/');
     } catch (error: any) {

@@ -151,7 +151,7 @@ const Header = ({
             <CloseIcon sx={{ color: theme.palette.customColors.black }} />
           </IconButton>
 
-          <Login handleLogin={handleLoginClose} />
+          <Login user={user} handleLogin={handleLoginClose} />
 
           <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
             Еще нет аккаунта?{' '}
