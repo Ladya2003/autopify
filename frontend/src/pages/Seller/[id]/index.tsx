@@ -17,6 +17,7 @@ import commentService from '../../../services/api/commentService';
 import { DEFAULT_AVATAR } from '../../../types/user';
 import Header from '../../../components/layout/Header';
 import { CommentType } from '../../../types/comment';
+import { parseAvatarURL } from '../../../services/utils/utils';
 
 export const SellerDetails = () => {
   const { id } = useParams();
@@ -73,7 +74,7 @@ export const SellerDetails = () => {
       <Box p={5} textAlign="center">
         <CardMedia
           component="img"
-          image={user.profilePicture || DEFAULT_AVATAR}
+          image={parseAvatarURL(user.profilePicture)}
           alt={user.nickname || user.email}
           sx={{
             margin: '0 auto',
@@ -104,9 +105,21 @@ export const SellerDetails = () => {
               placeholder="Добавить комментарий..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+              onKeyPress={(e) =>
+                e.key === 'Enter' &&
+                (user
+                  ? handleAddComment()
+                  : alert('Зарегистрируйтесь, чтобы оставлять комментарии!'))
+              }
             />
-            <Button variant="contained" onClick={handleAddComment}>
+            <Button
+              variant="contained"
+              onClick={() =>
+                user
+                  ? handleAddComment()
+                  : alert('Зарегистрируйтесь, чтобы оставлять комментарии!')
+              }
+            >
               Добавить
             </Button>
           </Box>
@@ -117,7 +130,7 @@ export const SellerDetails = () => {
                 <ListItemAvatar>
                   <CardMedia
                     component="img"
-                    image={comment.author?.profilePicture || DEFAULT_AVATAR}
+                    image={parseAvatarURL(comment.author?.profilePicture)}
                     alt={comment.author?.nickname || comment.author?.email}
                     sx={{
                       borderRadius: '50%',

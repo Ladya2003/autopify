@@ -132,8 +132,8 @@ export class CarsController {
     @UploadedFiles()
     files: { images?: Express.Multer.File[] },
   ): Promise<any> {
-    const dataToUpdate = files.images
-      ? { ...updateData, images: files.images?.map((file) => file.path) }
+    const dataToUpdate = files?.images
+      ? { ...updateData, images: files?.images?.map((file) => file.path) }
       : updateData;
 
     // updateData = {

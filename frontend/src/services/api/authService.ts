@@ -14,7 +14,6 @@ const authService = {
       } else if (response.data.message === 'Banned by admin') {
         alert('К сожалению, вас заблокировала администрация');
       } else {
-        debugger;
         const { access_token, refresh_token } = response.data;
 
         // Сохраняем токены
@@ -38,7 +37,7 @@ const authService = {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     console.log('Выход выполнен');
-    window.location.reload();
+    // window.location.reload();
   },
   async fetchUserRole(): Promise<UserType | null> {
     try {

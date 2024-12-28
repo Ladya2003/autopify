@@ -77,7 +77,7 @@ const CarDetailsPage: React.FC = () => {
         carId: id!,
         status: TestDriveStatus.Pending,
         description: testDriveComment,
-        testDriveDatetime: new Date(selectedDate).toISOString(),
+        testDriveDatetime: selectedDate,
       })
       .then(() => {
         alert(
@@ -170,8 +170,16 @@ const CarDetailsPage: React.FC = () => {
 
   const parsedAvatarURL = parseAvatarURL(car.seller?.profilePicture);
 
-  console.log('displayedComments', displayedComments);
-  console.log('testDrives', testDrives);
+  const now = dayjs();
+
+  const disableTestDrive = (date: string) => {
+    const formattedDate = dayjs(date);
+    const isBefore = formattedDate.isBefore(now);
+    const isSameDay = formattedDate.isSame(now, 'day');
+
+    return isBefore || isSameDay;
+  };
+
   return (
     <>
       {/* TODO: добавить назад в хедер (можно забить) */}
@@ -276,6 +284,7 @@ const CarDetailsPage: React.FC = () => {
                     {car.testDriveAvailability.map((date, idx) => (
                       <Grid item key={idx}>
                         <Button
+                          disabled={disableTestDrive(date)}
                           variant="outlined"
                           onClick={() => {
                             setSelectedDate(date);
@@ -456,6 +465,9 @@ const CarDetailsPage: React.FC = () => {
             borderRadius: 2,
             minWidth: 700,
             position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
           }}
         >
           <IconButton
