@@ -35,6 +35,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CommentType } from '../../../types/comment';
 import { parseAvatarURL } from '../../../services/utils/utils';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 const CarDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -77,7 +80,7 @@ const CarDetailsPage: React.FC = () => {
         carId: id!,
         status: TestDriveStatus.Pending,
         description: testDriveComment,
-        testDriveDatetime: new Date(selectedDate).toISOString(),
+        testDriveDatetime: selectedDate,
       })
       .then(() => {
         alert(
@@ -130,8 +133,6 @@ const CarDetailsPage: React.FC = () => {
     fetchUser();
   }, [token]);
 
-  console.log('car', car);
-
   if (!car) {
     return (
       <div
@@ -170,8 +171,16 @@ const CarDetailsPage: React.FC = () => {
 
   const parsedAvatarURL = parseAvatarURL(car.seller?.profilePicture);
 
-  console.log('displayedComments', displayedComments);
-  console.log('testDrives', testDrives);
+  const now = dayjs();
+
+  const disableTestDrive = (date: string) => {
+    const formattedDate = dayjs(date);
+    const isBefore = formattedDate.isBefore(now);
+    const isSameDay = formattedDate.isSame(now, 'day');
+
+    return isBefore || isSameDay;
+  };
+
   return (
     <>
       {/* TODO: добавить назад в хедер (можно забить) */}
@@ -277,6 +286,7 @@ const CarDetailsPage: React.FC = () => {
                       <Grid item key={idx}>
                         <Button
                           variant="outlined"
+                          disabled={disableTestDrive(date)}
                           onClick={() => {
                             setSelectedDate(date);
                             user
@@ -456,6 +466,9 @@ const CarDetailsPage: React.FC = () => {
             borderRadius: 2,
             minWidth: 700,
             position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
           }}
         >
           <IconButton

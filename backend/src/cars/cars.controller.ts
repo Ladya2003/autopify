@@ -110,12 +110,17 @@ export class CarsController {
   ) {
     const user = req.user;
 
+    const processedImages = files.images?.map((file) => {
+      const relativePath = file.path.replace('/usr/src/app/assets/images/', ''); // Удаляем префикс
+      return relativePath; // Сохраняем относительный путь
+    });
+
     // Передача файлов в сервис
     return this.carsService.create({
       ...createCarDto,
       sellerId: user.id,
       // testDriveAvailability: createCarDto?.testDriveAvailability?.sort(),
-      images: files.images?.map((file) => file.path), // Сохраняем пути к файлам
+      images: processedImages, // Сохраняем пути к файлам
     });
   }
 
@@ -132,8 +137,8 @@ export class CarsController {
     @UploadedFiles()
     files: { images?: Express.Multer.File[] },
   ): Promise<any> {
-    const dataToUpdate = files.images
-      ? { ...updateData, images: files.images?.map((file) => file.path) }
+    const dataToUpdate = files?.images
+      ? { ...updateData, images: files?.images?.map((file) => file.path.replace('/usr/src/app/assets/images/', '')) }
       : updateData;
 
     // updateData = {

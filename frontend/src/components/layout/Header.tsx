@@ -19,6 +19,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import authService from '../../services/api/authService';
 import { UserType } from '../../types/user';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({
   title,
@@ -34,6 +35,7 @@ const Header = ({
   sx?: SxProps;
 }) => {
   const theme = useTheme();
+  const navigator = useNavigate();
 
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
@@ -68,6 +70,8 @@ const Header = ({
   const handleLogout = () => {
     authService.logout();
     setUser(null); // Очистка состояния пользователя
+    navigator('/');
+    window.location.reload();
   };
 
   return (

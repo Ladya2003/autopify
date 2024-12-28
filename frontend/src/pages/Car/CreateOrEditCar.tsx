@@ -125,7 +125,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
       fuelType: 'Petrol',
       mileage: '250000',
       price: '10000',
-      description: 'Very cool car',
+      description: 'Пример описания',
       images: undefined,
       testDriveAvailability: [],
     },
@@ -135,6 +135,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
     if (carId) {
       (async () => {
         const carData = await carService.fetchCar(carId);
+
         reset({
           ...carData,
           year: carData.year.toString(),
@@ -142,7 +143,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
           mileage: carData.mileage.toString(),
           price: carData.price.toString(),
           testDriveAvailability: carData.testDriveAvailability.map(
-            (date: string) => new Date(date).toISOString(),
+            (date: string) => dayjs(date).format(),
           ),
           images: carData.images,
         });
@@ -154,6 +155,9 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
 
   const onSubmit = async (data: CarFormData) => {
     try {
+      if (data.testDriveAvailability.length < 1)
+        return alert('Добавьте хотя бы один день для тест-драйва');
+
       const formData = new FormData();
 
       // Преобразование данных для числовых и других полей
@@ -164,7 +168,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
         mileage: Number(data.mileage),
         price: Number(data.price),
         testDriveAvailability: data.testDriveAvailability.map((date) =>
-          new Date(date).toISOString(),
+          dayjs(date).format(),
         ),
       };
 
@@ -201,7 +205,7 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
       }
     } catch (error) {
       console.error('Ошибка при сохранении:', error);
-      alert('Произошла ошибка при сохранении.');
+      alert('Такое объявление уже есть!');
     }
   };
 
@@ -214,15 +218,11 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
       const previewUrls = Array.from(files).map((file) =>
         URL.createObjectURL(file),
       );
+      console.log('files', files);
       setPreviews(previewUrls); // Устанавливаем превью изображений
       onChange(files); // Передаем файлы в контроллер формы
     }
   };
-
-  console.log(
-    'previews',
-    `http://localhost:3000/assets/images/${previews[0]?.split('\\').pop()}`,
-  );
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -443,8 +443,6 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
               </div>
             )}
           />
-          {/* TODO: make this abligatary */}
-          {/* TODO: посмотреть чтобы корректно работало при изменении самой публикации. изменять статусы на canceld для тех что создатель убрал при редактировании */}
           <Controller
             name="testDriveAvailability"
             control={control}
@@ -466,9 +464,9 @@ const CreateOrEditCar: React.FC<CreateOrEditCarProps> = ({
                 const newDates = [...(field.value || [])];
 
                 if (date && date.isValid()) {
-                  newDates[index] = date.toISOString();
+                  newDates[index] = date.format();
                 } else {
-                  newDates[index] = dayjs().toISOString(); // Сбрасываем некорректную дату
+                  newDates[index] = dayjs().format(); // Сбрасываем некорректную дату
                 }
 
                 field.onChange(newDates); // Обновить дату по индексу

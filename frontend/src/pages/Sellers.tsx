@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import userService from '../services/api/userService';
 import Header from '../components/layout/Header';
+import { parseAvatarURL } from '../services/utils/utils';
 
 interface User {
   _id: string;
@@ -58,14 +59,14 @@ export const Sellers = () => {
                   <CardMedia
                     component="img"
                     height="140"
-                    image={seller.profilePicture}
+                    image={parseAvatarURL(seller.profilePicture)}
                     alt={seller.nickname || 'Seller Avatar'}
                   />
                 ) : (
                   <CardMedia
                     component="img"
                     height="140"
-                    image="/placeholder-avatar.png"
+                    image={parseAvatarURL()}
                     alt="No Avatar"
                   />
                 )}

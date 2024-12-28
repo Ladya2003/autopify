@@ -6,6 +6,7 @@ export enum TestDriveStatus {
   Pending = 'pending',
   Accepted = 'accepted',
   Rejected = 'rejected',
+  Canceled = 'canceled',
 }
 
 export type TestDrive = {

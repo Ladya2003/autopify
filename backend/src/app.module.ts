@@ -25,9 +25,10 @@ import { JwtModule } from '@nestjs/jwt';
     CommentsModule,
     SellerRequestsModule,
     // TODO: change that to env (можно забить)
-    MongooseModule.forRoot(
-      'mongodb+srv://vladvakulenchikk:123123123@cluster0.mu3ekbo.mongodb.net/cars?retryWrites=true&w=majority',
-    ),
+    // MongooseModule.forRoot(
+    //   'mongodb+srv://vladvakulenchikk:123123123@cluster0.mu3ekbo.mongodb.net/cars?retryWrites=true&w=majority',
+    // ),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     JwtModule,
   ],
   controllers: [AppController],
@@ -38,3 +39,8 @@ import { JwtModule } from '@nestjs/jwt';
   ],
 })
 export class AppModule {}
+
+// docker build -t nest-backend .
+// docker run -d -p 3000:3000 --env MONGO_URI="your_mongo_atlas_connection_string" nest-backend
+
+// docker-compose up --build
